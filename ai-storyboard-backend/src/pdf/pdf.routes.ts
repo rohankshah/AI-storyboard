@@ -5,7 +5,7 @@ import { upload } from '../middleware/upload.js';
 export function createPdfRouter(pdfController: PdfController) {
   const router = Router();
 
-  router.post('/', upload.single('pdf'), pdfController.parsePdf);
+  router.post('/', upload.single('pdf'), pdfController.handleUploadedFile);
 
   return router;
 }
