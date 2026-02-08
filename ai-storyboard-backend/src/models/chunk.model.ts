@@ -10,7 +10,12 @@ const ChunkSchema = new mongoose.Schema(
       required: true,
     },
     original: String,
-    summary: String
+    status: {
+      type: String,
+      enum: ['UNPROCESSED', 'PROCESSED'],
+      default: 'UNPROCESSED',
+      required: true,
+    }
   },
   { timestamps: true },
 );

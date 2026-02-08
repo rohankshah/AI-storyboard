@@ -1,36 +1,48 @@
 import { PDFParse } from 'pdf-parse';
-import { LlmService } from '../llm/llm.service.js';
+import { QueueService } from '../queue/queue.service.js';
+import { ScreenplayModel } from '../models/screenplay.model.js';
+import { ChunkModel } from '../models/chunk.model.js';
+
+type MulterFile = Express.Multer.File;
 
 export class PdfService {
-  constructor(private llmService: LlmService) {}
+  constructor(
+    private queueService: QueueService,
+  ) {}
 
-  async handleSummarize(file: Express.Multer.File) {
-    const text = await this.handlePdfParse(file);
+  async handleInitialSave(screenplayFile: MulterFile, screenplayHash: string) {
+    const screenplayName = screenplayFile?.originalname;
+
+    const screenplayModel = new ScreenplayModel({
+      screenplayId: screenplayHash,
+      name: screenplayName,
+    });
+    await screenplayModel.save();
+
+    // Extract chunks
+    const text = await this.handlePdfParse(screenplayFile);
 
     const chunks = this.convertTextToChunks(text);
     const totalChunks = chunks.length;
 
-    let previousChunk: string | null = null;
-
-    const summary = [];
-
-    // console.log('AI summarizing')
-    for (let i = 0; i < 2; i++) {
+    // Save chunks
+    for (let i = 0; i < 1; i++) {
       let chunk = chunks[i];
 
-      const data = await this.llmService.chat(
-        chunk,
-        previousChunk,
-        i,
-        totalChunks,
-      );
+      const chunkModel = new ChunkModel({
+        index: i,
+        screenplay: screenplayModel,
+        original: chunk,
+        status: 'UNPROCESSED',
+      });
 
-      summary.push(data?.choices[0].message.content);
+      await chunkModel.save();
 
-      previousChunk = chunk;
+      this.queueService.addToSummarizeQueue({
+        totalChunks: totalChunks,
+        chunkId: chunkModel._id
+      });
     }
-
-    console.log(summary);
   }
 
   async handlePdfParse(pdfFile: Express.Multer.File) {
