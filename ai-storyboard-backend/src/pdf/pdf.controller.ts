@@ -29,12 +29,10 @@ export class PdfController {
       // If doesn't exist then save
       if (exists && exists.length === 0) {
         this.pdfService.handleInitialSave(screenplayFile, screenplayHash);
-      } else {
-        // If exists then check if any chunks haven't been proceesed. And add them to queue
-        // this.pdfService.processChunks()
+        res.status(200).json({ message: 'saved' });
       }
 
-      res.status(200).json({ message: 'success' });
+      res.status(200).json({ message: 'Screenplay already exists' });
     } catch (err) {
       next(err);
     }

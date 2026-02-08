@@ -12,8 +12,8 @@ export const createSummarizeWorker = (llmService: LlmService) => {
       const { totalChunks, chunkId } = job.data as SummarizeQueueJob;
 
       const chunkItem = await ChunkModel.findOne({ _id: chunkId });
-      const chunkIndex = chunkItem?.get('index');
-      const originalChunk = chunkItem?.get('original');
+      const chunkIndex = chunkItem?.get('chunkIndex');
+      const originalChunk = chunkItem?.get('originalText');
 
       if (typeof chunkIndex !== 'number' || !originalChunk) {
         return;
@@ -22,10 +22,10 @@ export const createSummarizeWorker = (llmService: LlmService) => {
       let previousChunk = '';
       if (chunkIndex > 0) {
         const previousChunkRaw = await ChunkModel.findOne({
-          index: chunkIndex - 1,
+          chunkIndex: chunkIndex - 1,
           screenplay: chunkItem?.get('screenplay'),
         });
-        previousChunk = previousChunkRaw?.get('original') ?? '';
+        previousChunk = previousChunkRaw?.get('originalText') ?? '';
       }
 
       // LLM Generate summary
@@ -47,7 +47,7 @@ export const createSummarizeWorker = (llmService: LlmService) => {
 
       // Create new chunk summary item
       const chunkSummaryItem = new ChunkSummaryModel({
-        index: chunkIndex,
+        chunkIndex: chunkIndex,
         model: data?.model,
         start: chunkSummary?.start,
         end: chunkSummary?.end,
