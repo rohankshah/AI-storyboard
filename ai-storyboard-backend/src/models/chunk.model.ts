@@ -3,13 +3,13 @@ import mongoose from '../database/mongoose.js';
 
 const ChunkSchema = new mongoose.Schema(
   {
-    index: Number,
+    chunkIndex: Number,
     screenplay: {
       type: Schema.Types.ObjectId,
       ref: 'Screenplay',
       required: true,
     },
-    original: String,
+    originalText: String,
     status: {
       type: String,
       enum: ['UNPROCESSED', 'PROCESSED'],

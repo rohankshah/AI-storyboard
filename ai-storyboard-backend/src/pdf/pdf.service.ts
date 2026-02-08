@@ -30,9 +30,9 @@ export class PdfService {
       let chunk = chunks[i];
 
       const chunkModel = new ChunkModel({
-        index: i,
+        chunkIndex: i,
         screenplay: screenplayModel,
-        original: chunk,
+        originalText: chunk,
         status: 'UNPROCESSED',
       });
 
@@ -46,7 +46,6 @@ export class PdfService {
   }
 
   async handlePdfParse(pdfFile: Express.Multer.File) {
-    // const filename = pdfFile?.originalname;
     const fileUrl = pdfFile?.buffer;
 
     const parser = new PDFParse({ data: fileUrl });

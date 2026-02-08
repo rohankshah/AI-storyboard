@@ -3,7 +3,7 @@ import mongoose from '../database/mongoose.js';
 const ChunkSummary = new mongoose.Schema(
   {
     model: String,
-    index: Number,
+    chunkIndex: Number,
     start: String,
     end: String,
     continuedFromPrevious: Boolean,

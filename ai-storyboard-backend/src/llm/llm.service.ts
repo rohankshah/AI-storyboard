@@ -14,7 +14,7 @@ export class LlmService {
   }
 
   async chat(
-    chunk: string,
+    originalChunk: string,
     previousChunk: string | null,
     index: number,
     totalChunks: number,
@@ -38,7 +38,7 @@ export class LlmService {
             ${previousChunk ?? 'None'}
 
             Text:
-            ${chunk}
+            ${originalChunk}
 
             Chunk position:
             - Chunk ${index + 1} of ${totalChunks}
