@@ -4,12 +4,21 @@ import { sceneSchema } from './llm.schemas.js';
 export class LlmService {
   private router: OpenRouter;
   constructor() {
+    if (!process.env.OPENROUTER_API_KEY) {
+      throw new Error('OPENROUTER_API_KEY is not set');
+    }
+
     this.router = new OpenRouter({
       apiKey: process.env.OPENROUTER_API_KEY,
     });
   }
 
-  async chat(chunk: string, previousChunk: string | null, index: number, totalChunks: number) {
+  async chat(
+    chunk: string,
+    previousChunk: string | null,
+    index: number,
+    totalChunks: number,
+  ) {
     try {
       let completion = await this.router.chat.send({
         model: 'google/gemini-2.5-flash-lite',
@@ -45,7 +54,7 @@ export class LlmService {
         },
       });
 
-      return(completion)
+      return completion;
 
       // console.log(completion.choices[0].message);
 

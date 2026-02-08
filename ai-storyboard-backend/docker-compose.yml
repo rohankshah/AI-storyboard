@@ -7,10 +7,20 @@ services:
     restart: unless-stopped
     ports:
       - "27017:27017"
-    environment:
-      MONGO_INITDB_DATABASE: storyboard
     volumes:
       - mongo_data:/data/db
+    environment:
+      MONGO_INITDB_DATABASE: storyboard
+
+  redis:
+    image: redis:7
+    container_name: storyboard-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
 
 volumes:
   mongo_data:
+  redis_data:
